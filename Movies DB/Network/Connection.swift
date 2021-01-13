@@ -50,7 +50,8 @@ class Connection {
                         switch response.result {
                         case .success:
                             print("Validation Successful")
-                            if let movieList = try? JSONDecoder().decode([Movie].self, from: response.data!) {
+                            if let movieFilterResponse = try? JSONDecoder().decode(MovieFilterResponse.self, from: response.data!) {
+                                let movieList = movieFilterResponse.movies
                                 if(successCallback != nil){
                                     successCallback!(movieList)
                                 }
@@ -188,11 +189,6 @@ class Connection {
                 AF.request(endpoint.request).validate(statusCode: [200]).validate(contentType: ["application/json"]).responseJSON { (response) in
                     print("Response: \n \(String(describing: response.result))")
                     do{
-                        if let data = response.data {
-                            let json = String(data: data, encoding: String.Encoding.utf8)
-                            print("Failure Response: \(String(describing: json))")
-                        }
-                        
                         switch response.result {
                         case .success:
                             print("Validation Successful")

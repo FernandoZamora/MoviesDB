@@ -12,6 +12,7 @@ enum Endpoint{
     case getMovie(id: Int)
     case getTrailers(movieId: Int)
     case getVideoURL(key: String)
+    case getPosterURL(path: String)
     
     var url: String {
         get {
@@ -20,6 +21,7 @@ enum Endpoint{
           case .getMovie(let id): return "\(ConnectionSetup.baseURL)/movie/\(id)?api_key=\(ConnectionSetup.apiKey)&language=\(Language.getInstance().currentLanguage.rawValue)"
           case .getTrailers(let movieId): return "\(ConnectionSetup.baseURL)/movie/\(movieId)/videos?api_key=\(ConnectionSetup.apiKey)&language=\(Language.getInstance().currentLanguage.rawValue)"
           case .getVideoURL(let key): return "https://www.youtube.com/watch?v=\(key)"
+          case .getPosterURL(let path): return "https://image.tmdb.org/t/p/w500/\(path)"
           }
         }
       }
@@ -27,7 +29,7 @@ enum Endpoint{
     var httpMethod: String {
         get {
           switch self {
-          case .getMovieList(_), .getMovie(_), .getTrailers(_):  return "get"
+          case .getMovieList(_), .getMovie(_), .getTrailers(_), .getPosterURL(_):  return "get"
           default: return "get"
           }
         }
@@ -38,6 +40,7 @@ enum Endpoint{
             var request = URLRequest(url: URL(string: self.url)!)
           request.setValue("application/json; charset=utf-8", forHTTPHeaderField: "Content-Type")
           request.httpMethod = self.httpMethod
+            return request
         }
       }
 }

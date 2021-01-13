@@ -8,7 +8,7 @@
 import Foundation
 
 struct Trailer: Codable {
-    let id: Int
+    let id: String
     let key: String
     let name: String
 }
@@ -16,4 +16,9 @@ struct Trailer: Codable {
 struct TrailerResponse: Codable{
     let id: Int
     let trailers: [Trailer]
+    
+    enum CodingKeys: String, CodingKey {
+        case id
+        case trailers = "results"
+    }
 }
