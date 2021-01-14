@@ -22,5 +22,12 @@ class Language {
     enum SupportedLanguages: String {
         case english = "en-US"
         case spanish = "es-MX"
+        
+        func getLocaleCode() -> String {
+            switch self {
+            case .english: return "en"
+            case .spanish: return "es-419"
+            }
+        }
     }
 }
