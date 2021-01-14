@@ -12,15 +12,15 @@ class MovieListViewController: UIViewController {
     @IBOutlet weak var movieCollectionView: UICollectionView!
     
     var movies: [Movie] = []
-    var movieOrder: MovieOrder = .latestReleases {
+    var movieOrder: MovieOrder = .topRated {
         didSet{
             switch movieOrder {
-            case .latestReleases:
-                self.title = "Latest Movies"
+            case .upcoming:
+                self.title = "movie_list_title1".localized()
             case .mostPopular:
-                self.title = "Popular Movies"
+                self.title = "movie_list_title2".localized()
             case .topRated:
-                self.title = "Top Rated Movies"
+                self.title = "movie_list_title3".localized()
             }
         }
     }
@@ -33,7 +33,9 @@ class MovieListViewController: UIViewController {
         movieCollectionView.dataSource = self
         MovieCollectionViewCell.register(in: movieCollectionView)
         
-        movieOrder = .latestReleases
+        movieOrder = .upcoming
+        
+        navigationItem.rightBarButtonItem = UIBarButtonItem(image:UIImage(systemName:"gearshape"), style: .plain, target: self, action: #selector(settingsTapped))
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -56,6 +58,42 @@ class MovieListViewController: UIViewController {
            let movie = selectedMovie{
             detailVC.movieId = movie.id
         }
+    }
+    
+    @objc func settingsTapped(){
+        let menu = UIAlertController(title: "menu_title".localized(), message: "menu_instructions".localized(), preferredStyle: .actionSheet)
+        let changeLanguageBtn = UIAlertAction(title: "menu_change_language_button".localized(), style: .default){_ in
+            switch Language.getInstance().currentLanguage{
+                case .english: Language.getInstance().currentLanguage = .spanish
+                case .spanish: Language.getInstance().currentLanguage = .english
+            }
+            switch self.movieOrder {
+                case .upcoming:
+                    self.title = "movie_list_title1".localized()
+                case .mostPopular:
+                    self.title = "movie_list_title2".localized()
+                case .topRated:
+                    self.title = "movie_list_title3".localized()
+            }
+            self.viewWillAppear(true)
+        }
+        menu.addAction(changeLanguageBtn)
+        let changeUpcomingBtn = UIAlertAction(title: "menu_change_upcoming_button".localized(), style: .default){_ in
+            self.movieOrder = .upcoming
+            self.viewWillAppear(true)
+        }
+        menu.addAction(changeUpcomingBtn)
+        let changePopularBtn = UIAlertAction(title: "menu_change_popular_button".localized(), style: .default){_ in
+            self.movieOrder = .mostPopular
+            self.viewWillAppear(true)
+        }
+        menu.addAction(changePopularBtn)
+        let changeTopRatedBtn = UIAlertAction(title: "menu_change_top_rated_button".localized(), style: .default){_ in
+            self.movieOrder = .topRated
+            self.viewWillAppear(true)
+        }
+        menu.addAction(changeTopRatedBtn)
+        self.present(menu, animated: true, completion: nil)
     }
 }
 extension MovieListViewController: UICollectionViewDelegate{

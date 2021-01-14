@@ -17,6 +17,7 @@ struct Movie: Codable{
     let score: Double
     let poster: String
     let hasTrailers: Bool
+    var isFavorite: Bool = false
     
     enum CodingKeys: String, CodingKey {
         case id

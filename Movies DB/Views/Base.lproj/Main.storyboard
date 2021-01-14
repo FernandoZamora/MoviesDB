@@ -77,6 +77,12 @@
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
+                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="FullTitleLabel" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k9r-cl-kT0">
+                                                        <rect key="frame" x="136" y="42.5" width="238" height="14.5"/>
+                                                        <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
+                                                        <nil key="textColor"/>
+                                                        <nil key="highlightedColor"/>
+                                                    </label>
                                                     <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="YearLabel" textAlignment="natural" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="eKa-2A-N3N">
                                                         <rect key="frame" x="136" y="65" width="238" height="14.5"/>
                                                         <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
@@ -96,11 +102,11 @@
                                                         <nil key="highlightedColor"/>
                                                     </label>
                                                     <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="UWS-bC-LD3">
-                                                        <rect key="frame" x="136" y="150" width="238" height="30"/>
+                                                        <rect key="frame" x="136" y="158" width="238" height="22"/>
                                                         <subviews>
-                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" buttonType="system" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2xU-B5-ICR">
-                                                                <rect key="frame" x="0.0" y="0.0" width="78" height="30"/>
-                                                                <state key="normal" title="FavoriteBtn"/>
+                                                            <button opaque="NO" contentMode="scaleToFill" contentHorizontalAlignment="center" contentVerticalAlignment="center" lineBreakMode="middleTruncation" translatesAutoresizingMaskIntoConstraints="NO" id="2xU-B5-ICR">
+                                                                <rect key="frame" x="0.0" y="0.0" width="109" height="22"/>
+                                                                <state key="normal" title="FavoriteBtn" image="bookmark" catalog="system"/>
                                                             </button>
                                                         </subviews>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -110,12 +116,6 @@
                                                             <constraint firstAttribute="bottom" secondItem="2xU-B5-ICR" secondAttribute="bottom" id="tQ2-oO-gxD"/>
                                                         </constraints>
                                                     </view>
-                                                    <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="FullTitleLabel" textAlignment="natural" lineBreakMode="tailTruncation" numberOfLines="3" baselineAdjustment="alignBaselines" adjustsFontSizeToFit="NO" translatesAutoresizingMaskIntoConstraints="NO" id="k9r-cl-kT0">
-                                                        <rect key="frame" x="136" y="42.5" width="238" height="14.5"/>
-                                                        <fontDescription key="fontDescription" style="UICTFontTextStyleCaption1"/>
-                                                        <nil key="textColor"/>
-                                                        <nil key="highlightedColor"/>
-                                                    </label>
                                                 </subviews>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
                                                 <constraints>
@@ -180,9 +180,12 @@
                                                         <nil key="textColor"/>
                                                         <nil key="highlightedColor"/>
                                                     </label>
-                                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" alwaysBounceVertical="YES" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="WX8-z1-9YO">
+                                                    <tableView clipsSubviews="YES" contentMode="scaleToFill" bounces="NO" alwaysBounceVertical="YES" scrollEnabled="NO" dataMode="prototypes" style="plain" separatorStyle="default" rowHeight="-1" estimatedRowHeight="-1" sectionHeaderHeight="28" sectionFooterHeight="28" translatesAutoresizingMaskIntoConstraints="NO" id="WX8-z1-9YO">
                                                         <rect key="frame" x="0.0" y="32" width="374" height="96"/>
                                                         <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                                                        <constraints>
+                                                            <constraint firstAttribute="height" constant="96" id="hok-o7-s8M"/>
+                                                        </constraints>
                                                     </tableView>
                                                 </subviews>
                                                 <color key="backgroundColor" systemColor="systemBackgroundColor"/>
@@ -194,7 +197,7 @@
                                                     <constraint firstItem="As8-7O-ifS" firstAttribute="top" secondItem="vMZ-X4-AoN" secondAttribute="top" id="mgE-hw-NB0"/>
                                                     <constraint firstItem="WX8-z1-9YO" firstAttribute="leading" secondItem="vMZ-X4-AoN" secondAttribute="leading" id="ql8-0u-zo0"/>
                                                     <constraint firstAttribute="trailing" secondItem="WX8-z1-9YO" secondAttribute="trailing" id="vn4-40-k9Y"/>
-                                                    <constraint firstAttribute="height" constant="128" id="yyI-WP-Q7k"/>
+                                                    <constraint firstAttribute="height" relation="greaterThanOrEqual" constant="128" id="yyI-WP-Q7k"/>
                                                 </constraints>
                                             </view>
                                         </subviews>
@@ -235,11 +238,15 @@
                     <connections>
                         <outlet property="descriptionLabel" destination="H7f-JW-7hX" id="PWt-6r-VWE"/>
                         <outlet property="durationLabel" destination="Fiu-RL-LkM" id="4kU-cg-Fg0"/>
+                        <outlet property="favoriteBtn" destination="2xU-B5-ICR" id="JU7-Wb-V35"/>
                         <outlet property="fullTitleLabel" destination="QO2-FA-qnV" id="QDp-B5-bvo"/>
                         <outlet property="originalTitle" destination="k9r-cl-kT0" id="UMr-A6-ztS"/>
+                        <outlet property="overviewLabel" destination="5AO-PM-M3J" id="JYW-Kb-eJP"/>
                         <outlet property="posterImageView" destination="JVa-XM-Axn" id="GeH-g5-GhS"/>
                         <outlet property="scoreLabel" destination="RBL-9Y-6Ss" id="IOg-47-Wfq"/>
                         <outlet property="trailerTableView" destination="WX8-z1-9YO" id="OvX-WV-Xn0"/>
+                        <outlet property="trailerTableViewHeightConstraint" destination="hok-o7-s8M" id="x8L-Qv-wTJ"/>
+                        <outlet property="trailersLabel" destination="As8-7O-ifS" id="nHE-2E-C3s"/>
                         <outlet property="yearLabel" destination="eKa-2A-N3N" id="rd0-7q-M5R"/>
                     </connections>
                 </viewController>
@@ -265,6 +272,7 @@
         </scene>
     </scenes>
     <resources>
+        <image name="bookmark" catalog="system" width="112" height="128"/>
         <systemColor name="systemBackgroundColor">
             <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
         </systemColor>

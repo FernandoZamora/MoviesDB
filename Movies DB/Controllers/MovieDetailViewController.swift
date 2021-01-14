@@ -18,6 +18,12 @@ class MovieDetailViewController: UIViewController {
     @IBOutlet weak var scoreLabel: UILabel!
     @IBOutlet weak var descriptionLabel: UILabel!
     @IBOutlet weak var trailerTableView: UITableView!
+    @IBOutlet weak var trailerTableViewHeightConstraint: NSLayoutConstraint!
+    
+    @IBOutlet weak var favoriteBtn: UIButton!
+    @IBOutlet weak var overviewLabel: UILabel!
+    @IBOutlet weak var trailersLabel: UILabel!
+    
     
     var movieId: Int = -1
     var movie: Movie? = nil
@@ -32,6 +38,9 @@ class MovieDetailViewController: UIViewController {
     }
     
     override func viewWillAppear(_ animated: Bool) {
+        overviewLabel.text = "movie_overview".localized()
+        trailersLabel.text = "movie_trailers".localized()
+        
         let connection = Connection.getInstance()
         connection.getMovie(withId: self.movieId){ (movie) in
             self.movie = movie
@@ -56,6 +65,12 @@ class MovieDetailViewController: UIViewController {
                 self.durationLabel.text = "- min"
             }
             self.scoreLabel.text = "\(movie.score)/10"
+            if movie.isFavorite{
+                self.favoriteBtn.setImage(UIImage(systemName: "bookmark.fill"), for: .normal)
+            }
+            else{
+                self.favoriteBtn.setImage(UIImage(systemName: "bookmark"), for: .normal)
+            }
             self.descriptionLabel.text = movie.description
             let posterURL = Endpoint.getPosterURL(path: movie.poster).url
             if let url = URL(string: posterURL) {
@@ -77,6 +92,13 @@ class MovieDetailViewController: UIViewController {
         connection.getTrailers(forMovieId: self.movieId) { (trailerList) in
             self.trailers = trailerList
             self.trailerTableView.reloadData()
+            if self.trailers.count > 0{
+                self.trailerTableViewHeightConstraint.constant = self.trailerTableView.contentSize.height
+            }
+            else{
+                self.trailerTableViewHeightConstraint.constant = 0
+            }
+            self.view.layoutIfNeeded()
         } failureCallback: { (errorString) in
             let alert = UIAlertController(title: nil, message: errorString, preferredStyle: .alert)
             let actionBtn = UIAlertAction(title: "OK", style: .default, handler: nil)
@@ -102,6 +124,16 @@ extension MovieDetailViewController: UITableViewDelegate, UITableViewDataSource 
         let cell = TrailerTableViewCell.dequeue(from: tableView)
         cell.configure(with: trailer)
         return cell
+    }
+    
+    func tableView(_ tableView: UITableView, didSelectRowAt indexPath: IndexPath) {
+        let trailer = trailers[indexPath.row]
+        
+        
+        if let url = URL(string: "youtube://\(trailer.key)"),
+           UIApplication.shared.canOpenURL(url){
+            UIApplication.shared.open(url, options: [:], completionHandler: nil)
+        }
     }
     
     
