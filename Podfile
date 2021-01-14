@@ -8,6 +8,7 @@ target 'Movies DB' do
   # Pods for Movies DB
   pod 'Alamofire', '~> 5.2'
   pod 'Kingfisher', '~> 6.0'
+  pod 'ReachabilitySwift', '~> 5.0'
 
   target 'Movies DBTests' do
     inherit! :search_paths

@@ -1,0 +1,19 @@
+/*
+  Localizable.strings
+  Movies DB
+
+  Created by Fernando Zamora on 13/01/21.
+  
+*/
+
+"movie_list_title1" = "Upcoming";
+"movie_list_title2" = "Popular Movies";
+"movie_list_title3" = "Top Rated Movies";
+"menu_title" = "Settings";
+"menu_instructions" = "Please select an option";
+"menu_change_language_button" = "Change to spanish";
+"menu_change_upcoming_button" = "See upcoming movies";
+"menu_change_popular_button" = "See popular movies";
+"menu_change_top_rated_button" = "See top rated movies";
+"movie_overview" = "Synopsis";
+"movie_trailers" = "Trailers";
