@@ -21,7 +21,11 @@ class MovieCollectionViewCell: UICollectionViewCell, Registrable, Dequeable {
 extension MovieCollectionViewCell: Configurable{
     typealias DataType = Movie
     func configure(with data: Movie) {
-        let posterURL = Endpoint.getPosterURL(path: data.poster).url
+        guard let posterPath = data.poster else{
+            self.posterImageView.image = UIImage(named: "placeholderImage")
+            return
+        }
+        let posterURL = Endpoint.getPosterURL(path: posterPath).url
         if let url = URL(string: posterURL) {
             self.posterImageView.kf.indicatorType = .activity
             self.posterImageView.kf.setImage(with: url,

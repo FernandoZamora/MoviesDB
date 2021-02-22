@@ -25,6 +25,8 @@ class MovieListViewController: UIViewController {
         }
     }
     var selectedMovie: Movie? = nil
+    var page = 1
+    
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -32,6 +34,7 @@ class MovieListViewController: UIViewController {
         movieCollectionView.delegate = self
         movieCollectionView.dataSource = self
         MovieCollectionViewCell.register(in: movieCollectionView)
+        LoadingCollectionViewCell.register(in: movieCollectionView)
         
         movieOrder = .upcoming
         
@@ -51,6 +54,24 @@ class MovieListViewController: UIViewController {
         }
     }
     
+    // MARK: - Paging
+    func loadNextPage(){
+        let connection = Connection.getInstance()
+        connection.getMovies(orderBy: movieOrder, page: self.page) { (movieList) in
+            var addedMoviesIndexes:[IndexPath] = []
+            for index in 0..<movieList.count{
+                addedMoviesIndexes.append(IndexPath(row: (index + self.movies.count), section: 0))
+            }
+            self.movies.append(contentsOf: movieList)
+            self.movieCollectionView.insertItems(at: addedMoviesIndexes)
+            self.page += 1
+        } failureCallback: { (errorString) in
+            let alert = UIAlertController(title: nil, message: errorString, preferredStyle: .alert)
+            let actionBtn = UIAlertAction(title: "OK", style: .default, handler: nil)
+            alert.addAction(actionBtn)
+            self.present(alert, animated: true, completion: nil)
+        }
+    }
 
     // MARK: - Navigation
     override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
@@ -105,14 +126,21 @@ extension MovieListViewController: UICollectionViewDelegate{
 }
 extension MovieListViewController: UICollectionViewDataSource{
     func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
-        return movies.count
+        return movies.count + 1
     }
     
     func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
-        let movie = movies[indexPath.row]
-        let movieCell = MovieCollectionViewCell.dequeue(from: collectionView, for: indexPath)
-        movieCell.configure(with: movie)
-        return movieCell
+        if indexPath.row < movies.count{
+            let movie = movies[indexPath.row]
+            let movieCell = MovieCollectionViewCell.dequeue(from: collectionView, for: indexPath)
+            movieCell.configure(with: movie)
+            return movieCell
+        }
+        else{
+            self.loadNextPage()
+            let loadingCell = LoadingCollectionViewCell.dequeue(from: collectionView, for: indexPath)
+            return loadingCell
+        }
     }
 }
 extension MovieListViewController: UICollectionViewDelegateFlowLayout{

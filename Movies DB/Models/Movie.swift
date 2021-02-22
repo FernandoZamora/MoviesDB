@@ -15,7 +15,7 @@ struct Movie: Codable{
     let release: String
     let duration: Int?
     let score: Double
-    let poster: String
+    let poster: String?
     let hasTrailers: Bool
     var isFavorite: Bool = false
     

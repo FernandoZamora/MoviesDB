@@ -29,156 +29,38 @@ class Connection {
     
     
     
-    func getMovies(orderBy order:MovieOrder, successCallback:(([Movie]) -> Void)?, failureCallback:((String) -> Void)?){
-        let endpoint: Endpoint = .getMovieList(order: order)
-        guard let reachability = self.reachability else{
-            failureCallback!(ConnectionError.serverNotAvailable.getErrorString())
-            return
-        }
-        do {
-            try reachability.startNotifier()
-            switch reachability.connection {
-            case .wifi, .cellular :
-                AF.request(endpoint.request).validate(statusCode: [200]).validate(contentType: ["application/json"]).responseJSON { (response) in
-                    print("Response: \n \(String(describing: response.result))")
-                    do{
-                        if let data = response.data {
-                            let json = String(data: data, encoding: String.Encoding.utf8)
-                            print("Failure Response: \(String(describing: json))")
-                        }
-                        
-                        switch response.result {
-                        case .success:
-                            print("Validation Successful")
-                            if let movieFilterResponse = try? JSONDecoder().decode(MovieFilterResponse.self, from: response.data!) {
-                                let movieList = movieFilterResponse.movies
-                                if(successCallback != nil){
-                                    successCallback!(movieList)
-                                }
-                            }
-                            else{
-                                throw ConnectionError.badResponse
-                            }
-                        case let .failure(error):
-                            print(error)
-                            if let statusCode = response.response?.statusCode, statusCode == 500 {
-                                throw ConnectionError.serverNotAvailable
-                            }
-                            else{
-                                throw ConnectionError.unknownError
-                            }
-                        }
-                    } catch ConnectionError.badResponse{
-                        if(failureCallback != nil){
-                            failureCallback!(ConnectionError.badResponse.getErrorString())
-                        }
-                    } catch ConnectionError.serverNotAvailable{
-                        if(failureCallback != nil){
-                            failureCallback!(ConnectionError.serverNotAvailable.getErrorString())
-                        }
-                    } catch {
-                        if(failureCallback != nil){
-                            failureCallback!(ConnectionError.unknownError.getErrorString())
-                        }
-                    }
-                }
-            case .none:
-                reachability.stopNotifier()
-                throw ConnectionError.noInternetConnection
-            case .unavailable:
-                reachability.stopNotifier()
-                throw ConnectionError.noInternetConnection
-            }
-            reachability.stopNotifier()
-        } catch ConnectionError.noInternetConnection{
-            if(failureCallback != nil){
-                failureCallback!(ConnectionError.noInternetConnection.getErrorString())
-            }
-        }
-        catch {
-            if(failureCallback != nil){
-                failureCallback!(ConnectionError.unknownError.getErrorString())
-            }
+    func getMovies(orderBy order:MovieOrder, page: Int = 1, successCallback:(([Movie]) -> Void)?, failureCallback:((String) -> Void)?){
+        let endpoint: Endpoint = .getMovieList(order: order, page: page)
+        self.getContent(withEndpoint: endpoint) { (response:MovieFilterResponse) in
+            let movieList = response.movies
+            successCallback?(movieList)
+        } failureCallback: { (errorMessage) in
+            failureCallback?(errorMessage)
         }
     }
     
     func getMovie(withId id: Int, successCallback:((Movie) -> Void)?, failureCallback:((String) -> Void)?){
         let endpoint: Endpoint = .getMovie(id: id)
-        
-        guard let reachability = self.reachability else{
-            failureCallback!(ConnectionError.serverNotAvailable.getErrorString())
-            return
-        }
-        do {
-            try reachability.startNotifier()
-            switch reachability.connection {
-            case .wifi, .cellular :
-                AF.request(endpoint.request).validate(statusCode: [200]).validate(contentType: ["application/json"]).responseJSON { (response) in
-                    print("Response: \n \(String(describing: response.result))")
-                    do{
-                        if let data = response.data {
-                            let json = String(data: data, encoding: String.Encoding.utf8)
-                            print("Failure Response: \(String(describing: json))")
-                        }
-                        
-                        switch response.result {
-                        case .success:
-                            print("Validation Successful")
-                            if let movie = try? JSONDecoder().decode(Movie.self, from: response.data!) {
-                                if(successCallback != nil){
-                                    successCallback!(movie)
-                                }
-                            }
-                            else{
-                                throw ConnectionError.badResponse
-                            }
-                        case let .failure(error):
-                            print(error)
-                            if let statusCode = response.response?.statusCode, statusCode == 500 {
-                                throw ConnectionError.serverNotAvailable
-                            }
-                            else{
-                                throw ConnectionError.unknownError
-                            }
-                        }
-                    } catch ConnectionError.badResponse{
-                        if(failureCallback != nil){
-                            failureCallback!(ConnectionError.badResponse.getErrorString())
-                        }
-                    } catch ConnectionError.serverNotAvailable{
-                        if(failureCallback != nil){
-                            failureCallback!(ConnectionError.serverNotAvailable.getErrorString())
-                        }
-                    } catch {
-                        if(failureCallback != nil){
-                            failureCallback!(ConnectionError.unknownError.getErrorString())
-                        }
-                    }
-                }
-            case .none:
-                reachability.stopNotifier()
-                throw ConnectionError.noInternetConnection
-            case .unavailable:
-                reachability.stopNotifier()
-                throw ConnectionError.noInternetConnection
-            }
-            reachability.stopNotifier()
-        } catch ConnectionError.noInternetConnection{
-            if(failureCallback != nil){
-                failureCallback!(ConnectionError.noInternetConnection.getErrorString())
-            }
-        }
-        catch {
-            if(failureCallback != nil){
-                failureCallback!(ConnectionError.unknownError.getErrorString())
-            }
+        self.getContent(withEndpoint: endpoint) { (response:Movie) in
+            successCallback?(response)
+        } failureCallback: { (errorMessage) in
+            failureCallback?(errorMessage)
         }
     }
     
     func getTrailers(forMovieId movieId: Int, successCallback:(([Trailer]) -> Void)?, failureCallback:((String) -> Void)?){
         let endpoint: Endpoint = .getTrailers(movieId: movieId)
+        self.getContent(withEndpoint: endpoint) { (response:TrailerResponse) in
+            let trailerList = response.trailers
+            successCallback?(trailerList)
+        } failureCallback: { (errorMessage) in
+            failureCallback?(errorMessage)
+        }
+    }
+    
+    private func getContent<Response:Codable>(withEndpoint endpoint:Endpoint, successCallback:((Response) -> Void)?, failureCallback:((String) -> Void)? ){
         guard let reachability = self.reachability else{
-            failureCallback!(ConnectionError.serverNotAvailable.getErrorString())
+            failureCallback?(ConnectionError.serverNotAvailable.getErrorString())
             return
         }
         do {
@@ -192,11 +74,8 @@ class Connection {
                         switch response.result {
                         case .success:
                             print("Validation Successful")
-                            if let trailerResponse = try? JSONDecoder().decode(TrailerResponse.self, from: response.data!){
-                                let trailerList = trailerResponse.trailers
-                                if(successCallback != nil){
-                                    successCallback!(trailerList)
-                                }
+                            if let responseData = try? JSONDecoder().decode(Response.self, from: response.data!){
+                                successCallback?(responseData)
                             }
                             else{
                                 throw ConnectionError.badResponse
@@ -211,17 +90,11 @@ class Connection {
                             }
                         }
                     } catch ConnectionError.badResponse{
-                        if(failureCallback != nil){
-                            failureCallback!(ConnectionError.badResponse.getErrorString())
-                        }
+                        failureCallback?(ConnectionError.badResponse.getErrorString())
                     } catch ConnectionError.serverNotAvailable{
-                        if(failureCallback != nil){
-                            failureCallback!(ConnectionError.serverNotAvailable.getErrorString())
-                        }
+                        failureCallback?(ConnectionError.serverNotAvailable.getErrorString())
                     } catch {
-                        if(failureCallback != nil){
-                            failureCallback!(ConnectionError.unknownError.getErrorString())
-                        }
+                        failureCallback?(ConnectionError.unknownError.getErrorString())
                     }
                 }
             case .none:
@@ -233,14 +106,10 @@ class Connection {
             }
             reachability.stopNotifier()
         } catch ConnectionError.noInternetConnection{
-            if(failureCallback != nil){
-                failureCallback!(ConnectionError.noInternetConnection.getErrorString())
-            }
+            failureCallback?(ConnectionError.noInternetConnection.getErrorString())
         }
         catch {
-            if(failureCallback != nil){
-                failureCallback!(ConnectionError.unknownError.getErrorString())
-            }
+            failureCallback?(ConnectionError.unknownError.getErrorString())
         }
     }
 }
