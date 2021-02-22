@@ -8,7 +8,7 @@
 import Foundation
 
 enum Endpoint{
-    case getMovieList(order: MovieOrder)
+    case getMovieList(order: MovieOrder, page: Int)
     case getMovie(id: Int)
     case getTrailers(movieId: Int)
     case getVideoURL(key: String)
@@ -17,7 +17,7 @@ enum Endpoint{
     var url: String {
         get {
           switch self{
-          case .getMovieList(let order): return "\(ConnectionSetup.baseURL)/movie/\(order.rawValue)?api_key=\(ConnectionSetup.apiKey)&language=\(Language.getInstance().currentLanguage.rawValue)"
+          case .getMovieList(let order, let page): return "\(ConnectionSetup.baseURL)/movie/\(order.rawValue)?api_key=\(ConnectionSetup.apiKey)&language=\(Language.getInstance().currentLanguage.rawValue)&page=\(page)"
           case .getMovie(let id): return "\(ConnectionSetup.baseURL)/movie/\(id)?api_key=\(ConnectionSetup.apiKey)&language=\(Language.getInstance().currentLanguage.rawValue)"
           case .getTrailers(let movieId): return "\(ConnectionSetup.baseURL)/movie/\(movieId)/videos?api_key=\(ConnectionSetup.apiKey)&language=\(Language.getInstance().currentLanguage.rawValue)"
           case .getVideoURL(let key): return "https://www.youtube.com/watch?v=\(key)"
@@ -29,7 +29,7 @@ enum Endpoint{
     var httpMethod: String {
         get {
           switch self {
-          case .getMovieList(_), .getMovie(_), .getTrailers(_), .getPosterURL(_):  return "get"
+          case .getMovieList(_,_), .getMovie(_), .getTrailers(_), .getPosterURL(_):  return "get"
           default: return "get"
           }
         }

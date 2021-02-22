@@ -72,7 +72,12 @@ class MovieDetailViewController: UIViewController {
                 self.favoriteBtn.setImage(UIImage(systemName: "bookmark"), for: .normal)
             }
             self.descriptionLabel.text = movie.description
-            let posterURL = Endpoint.getPosterURL(path: movie.poster).url
+            
+            guard let posterPath = movie.poster else{
+                self.posterImageView.image = UIImage(named: "placeholderImage")
+                return
+            }
+            let posterURL = Endpoint.getPosterURL(path: posterPath).url
             if let url = URL(string: posterURL) {
                 self.posterImageView.kf.indicatorType = .activity
                 self.posterImageView.kf.setImage(with: url,
@@ -82,6 +87,9 @@ class MovieDetailViewController: UIViewController {
                                                      .transition(.fade(1)),
                                                      .cacheOriginalImage
                                                  ])
+            }
+            else{
+                self.posterImageView.image = UIImage(named: "placeholderImage")
             }
         } failureCallback: { (errorString) in
             let alert = UIAlertController(title: nil, message: errorString, preferredStyle: .alert)
